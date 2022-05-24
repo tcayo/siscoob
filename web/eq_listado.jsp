@@ -4,7 +4,10 @@
 
 <h3 align="center">Listado de Equipos</h3>
 <div class="container">
-    <table class="table">                        
+    <table class="table">
+        <tr><td></td>
+            <td><a href="eq_nuevo.jsp"><button class="btn btn-success">Agregar registro</button></a></td> <!--btn btn-success es un boton de bootstrap de color verde-->
+        </tr>  
         <tr>
             <th>Id</th>            
             <th>Código</th>
@@ -32,10 +35,7 @@
         </tr>
         <%
             }
-        %>
-        <tr><td></td>
-            <td><a href="eq_nuevo.jsp"><button class="btn btn-success">Agregar registro</button></a></td> <!--btn btn-success es un boton de bootstrap de color verde-->
-        </tr>    
+        %>  
     </table>
 </div>               
 </body>

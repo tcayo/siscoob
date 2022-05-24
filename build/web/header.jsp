@@ -27,9 +27,29 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     </head>
     <body>
+        <script>
+            startday = new Date();
+            clockStart = startday.getTime();
+            function initStopwatch() {
+                var myTime = new Date();
+                return((myTime.getTime() - clockStart) / 1000);
+            }
+            function getSecs() {
+                var tSecs = Math.round(initStopwatch());
+                var iSecs = tSecs % 60;
+                var iMins = Math.round((tSecs - 30) / 60);
+                var sSecs = "" + ((iSecs > 9) ? iSecs : "0" + iSecs);
+                var sMins = "" + ((iMins > 9) ? iMins : "0" + iMins);
+                document.getElementById('timespent').value = sMins + ":" + sSecs;
+                window.setTimeout('getSecs()', 1000);
+            }
+            window.onload = function () {
+                window.setTimeout('getSecs()', 1);
+            }
+        </script>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container-fluid">
-                <a class="navbar-brand" href="index.jsp">SISCOOB</a>
+                <a class="navbar-brand" href="home.jsp">SISCOOB</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -46,7 +66,7 @@
                                 <li><a class="dropdown-item disabled" href="#">Reportes</a></li>
                             </ul>
                         </li>
-                        
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Usuarios
@@ -54,12 +74,12 @@
                             <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
                                 <li><a class="dropdown-item" href="ServletUsuarios">Lista de Usuarios</a></li>
                                 <li><a class="dropdown-item" href="u_nuevo.jsp">Nuevo Usuario</a></li>
-                                
+
                                 <li><hr class="dropdown-divider"></li>                                
                                 <li><a class="dropdown-item disabled" href="#">Reportes</a></li>
                             </ul>
                         </li>
-                        
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Utilidades
@@ -74,7 +94,7 @@
                         </li>
                     </ul>
                     <span class="navbar-text">
-                        Usuario: <b><%=usuario%></b> | Perfil: <%=perfil%>&nbsp&nbsp
+                        Usuario: <b><%=usuario%></b> | Perfil: <%=perfil%> | Duración: <input class="timepage" size="5" id="timespent" name="timespent">&nbsp&nbsp
                         <a href="ServletLogin?op=cerrar"><button class="btn btn-danger">Cerrar sesión</button></a>
                     </span>
                 </div>

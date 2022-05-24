@@ -9,7 +9,7 @@
             <tr>
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" name="chkActivo" id="flexSwitchCheckChecked" checked>
-                <label class="form-check-label" for="flexSwitchCheckChecked">Usuario activo</label>
+                <label class="form-check-label" for="flexSwitchCheckChecked">Registro activo</label>
             </div>
         </tr><tr>
         <td>Código Patrimonio: </td>
