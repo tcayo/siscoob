@@ -1,4 +1,20 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page session="true" %>
+<%
+    String usuario = "";
+    String perfil = "";
+    HttpSession sesionOk = request.getSession();
+    if (sesionOk.getAttribute("nombre") == null) {
+%>
+<jsp:forward page="index.jsp">
+    <jsp:param name="msg" value="Debe iniciar sesión para acceder al Sistema"/>
+</jsp:forward>
+<%
+    } else {
+        usuario = (String) sesionOk.getAttribute("nombre");
+        perfil = (String) sesionOk.getAttribute("perfil");
+    }
+%>
 
 <!DOCTYPE html>
 <html>
@@ -57,10 +73,10 @@
                             </ul>
                         </li>
                     </ul>
-                    <form class="d-flex">
-                        <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search">
-                        <button class="btn btn-outline-success disabled" type="submit">Buscar</button>
-                    </form>
+                    <span class="navbar-text">
+                        Usuario: <b><%=usuario%></b> | Perfil: <%=perfil%>&nbsp&nbsp
+                        <a href="ServletLogin?op=cerrar"><button class="btn btn-danger">Cerrar sesión</button></a>
+                    </span>
                 </div>
             </div>
         </nav>

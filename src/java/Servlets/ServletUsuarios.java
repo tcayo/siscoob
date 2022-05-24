@@ -47,9 +47,9 @@ public class ServletUsuarios extends HttpServlet {
         String actualizar = request.getParameter("upd");
         if (borrar != null) {
             try {
-                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("delete from usuarios where idusuario=?");
-                sta.setInt(1, Integer.parseInt(borrar));
-                sta.executeUpdate();
+                CallableStatement call = ConexionDB.getConexion().prepareCall("{ call usuario_del(?) }");
+                call.setInt(1, Integer.parseInt(borrar));
+                call.executeUpdate();
 
                 response.sendRedirect("ServletUsuarios");
 
@@ -58,9 +58,9 @@ public class ServletUsuarios extends HttpServlet {
             }
         } else if (actualizar != null) {
             try {
-                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("select * from usuarios where idusuario=?");
-                sta.setInt(1, Integer.parseInt(actualizar));
-                ResultSet rs = sta.executeQuery();
+                CallableStatement call = ConexionDB.getConexion().prepareCall("{ call usuario_get(?) }");
+                call.setInt(1, Integer.parseInt(actualizar));
+                ResultSet rs = call.executeQuery();
 
                 ArrayList<Usuarios> lista = new ArrayList<>();
 
@@ -77,8 +77,8 @@ public class ServletUsuarios extends HttpServlet {
             }
         } else {
             try {
-                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("select * from usuarios");
-                ResultSet rs = sta.executeQuery();
+                CallableStatement call = ConexionDB.getConexion().prepareCall("{ call usuarios_get() }");
+                ResultSet rs = call.executeQuery();
 
                 ArrayList<Usuarios> lista = new ArrayList<>();
 
@@ -121,18 +121,18 @@ public class ServletUsuarios extends HttpServlet {
                 }
 
                 String username = request.getParameter("txtUsername");
-                String password = request.getParameter("txtPassword");
+                String password = hashPassword(request.getParameter("txtPassword")); 
                 String tipo = request.getParameter("txtTipo");
 
-                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("insert into usuarios values(?,?,?,?,?,?)");
+                CallableStatement call = ConexionDB.getConexion().prepareCall("{ call usuario_new(?,?,?,?,?,?) }");
 
-                sta.setInt(1, 0);
-                sta.setString(2, username);
-                sta.setString(3, password);
-                sta.setInt(4, Integer.parseInt(tipo));
-                sta.setTimestamp(5, getCurrentTimeStamp());
-                sta.setTimestamp(6, getCurrentTimeStamp());
-                sta.executeUpdate();
+                call.setInt(1, 0);
+                call.setString(2, username);
+                call.setString(3, password);
+                call.setInt(4, Integer.parseInt(tipo));
+                call.setTimestamp(5, getCurrentTimeStamp());
+                call.setTimestamp(6, getCurrentTimeStamp());
+                call.executeUpdate();
 
                 //request.getRequestDispatcher("index.jsp").forward(request, response);
                 response.sendRedirect("ServletUsuarios");
@@ -149,18 +149,18 @@ public class ServletUsuarios extends HttpServlet {
                     estado = 0;
                 }
                 
-                String password = request.getParameter("txtPassword");
+                String password = hashPassword(request.getParameter("txtPassword"));                
                 int tipo = Integer.parseInt(request.getParameter("txtTipo"));
                 int id = Integer.parseInt(request.getParameter("updId"));
                 
-                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("UPDATE usuarios SET password=?,tipo=?,last_session=?,fecha_creacion=? WHERE idusuario=?");
+                CallableStatement call = ConexionDB.getConexion().prepareCall("{ call usuario_upd(?,?,?,?,?) }");
 
-                sta.setString(1, password);
-                sta.setInt(2, tipo);
-                sta.setTimestamp(3, getCurrentTimeStamp());
-                sta.setTimestamp(4, getCurrentTimeStamp());
-                sta.setInt(5, id);
-                sta.executeUpdate();
+                call.setString(1, password);
+                call.setInt(2, tipo);
+                call.setTimestamp(3, getCurrentTimeStamp());
+                call.setTimestamp(4, getCurrentTimeStamp());
+                call.setInt(5, id);
+                call.executeUpdate();
                 
                 response.sendRedirect("ServletUsuarios");
 
