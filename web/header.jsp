@@ -2,7 +2,7 @@
 <%@page session="true" %>
 <%
     String usuario = "";
-    String perfil = "";
+    int perfil=0;
     HttpSession sesionOk = request.getSession();
     if (sesionOk.getAttribute("nombre") == null) {
 %>
@@ -12,7 +12,7 @@
 <%
     } else {
         usuario = (String) sesionOk.getAttribute("nombre");
-        perfil = (String) sesionOk.getAttribute("perfil");
+        perfil = Integer.parseInt(sesionOk.getAttribute("perfil").toString());
     }
 %>
 
@@ -85,16 +85,17 @@
                                 Utilidades
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-                                <li><a class="dropdown-item" href="ServletErrores">Reportar error</a></li>
-                                <li><a class="dropdown-item disabled" href="ServletPermisos">Permisos</a></li>
-                                <li><a class="dropdown-item disabled" href="ServletHerramientas">Herramientas</a></li>
+                                <li><a class="dropdown-item" href="ServletLogs">Registro de eventos</a></li>
+                                <li><a class="dropdown-item" href="ServletReportes">Reportes</a></li>
+                                <li><a class="dropdown-item disabled" href="ServletPermisos">Perfiles de usuario</a></li>
+                                <li><a class="dropdown-item disabled" href="ServletHerramientas">Estados de equipo</a></li>
                                 <li><hr class="dropdown-divider"></li>                                
                                 <li><a class="dropdown-item disabled" href="#">Mantenimiento de BD</a></li>
                             </ul>
                         </li>
                     </ul>
                     <span class="navbar-text">
-                        Usuario: <b><%=usuario%></b> | Perfil: <%=perfil%> | Duración: <input class="timepage" size="5" id="timespent" name="timespent">&nbsp&nbsp
+                        Usuario: <b><%=usuario%></b> | Perfil: <% if(perfil==1){%>Usuario<%}else if(perfil==2){%>Administrador<%}else if(perfil==9){%>Super Administrador<%}else{%>Indeterminado<%}%> | Duración: <input class="timepage" size="5" id="timespent" name="timespent">&nbsp&nbsp
                         <a href="ServletLogin?op=cerrar"><button class="btn btn-danger">Cerrar sesión</button></a>
                     </span>
                 </div>

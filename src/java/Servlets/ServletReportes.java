@@ -1,21 +1,19 @@
 package Servlets;
 
+import Beans.Equipos;
 import Utils.ConexionDB;
-import static Utils.Tools.hashPassword;
-import static Utils.Tools.toLog;
 import java.io.IOException;
-import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-@WebServlet(name = "ServletLogin", urlPatterns = {"/ServletLogin"})
-public class ServletLogin extends HttpServlet {
+@WebServlet(name = "ServletReportes", urlPatterns = {"/ServletReportes"})
+public class ServletReportes extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -46,15 +44,46 @@ public class ServletLogin extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
 
-        String op = request.getParameter("op");
+        String consultar = request.getParameter("rep");        
+        if ((consultar != null)&&(!consultar.equals("0"))){
+            try {
+                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("select * from tblequipos WHERE idestado=?");
+                sta.setInt(1, Integer.parseInt(consultar));
+                ResultSet rs = sta.executeQuery();
 
-        if (op.equals("cerrar")) {
-            HttpSession sesionOk = request.getSession();
-            int id = (int) sesionOk.getAttribute("id");
-            toLog(id, 2, "Cierre de sesión");
+                ArrayList<Equipos> lista = new ArrayList<>();
 
-            sesionOk.invalidate();
-            request.getRequestDispatcher("index.jsp").forward(request, response);
+                while (rs.next()) {
+                    Equipos eq = new Equipos(rs.getInt(1), rs.getString(2), rs.getString(3),
+                            rs.getString(4), rs.getString(5), rs.getString(6), rs.getInt(7),
+                            rs.getString(8), rs.getString(9));
+                    lista.add(eq);
+                }
+                request.setAttribute("rep_lista", lista);
+                request.getRequestDispatcher("rep_listado.jsp").forward(request, response);
+
+            } catch (Exception e) {
+                System.out.println("Error: " + e);
+            }
+        } else {
+            try {
+                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("select * from tblequipos");
+                ResultSet rs = sta.executeQuery();
+
+                ArrayList<Equipos> lista = new ArrayList<>();
+
+                while (rs.next()) {
+                    Equipos eq = new Equipos(rs.getInt(1), rs.getString(2), rs.getString(3),
+                            rs.getString(4), rs.getString(5), rs.getString(6), rs.getInt(7),
+                            rs.getString(8), rs.getString(9));
+                    lista.add(eq);
+                }
+                request.setAttribute("rep_lista", lista);
+                request.getRequestDispatcher("rep_listado.jsp").forward(request, response);
+
+            } catch (Exception e) {
+                System.out.println("Error: " + e);
+            }
         }
     }
 
@@ -70,34 +99,6 @@ public class ServletLogin extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-
-        String usu = request.getParameter("txtUsu");
-        String pas = hashPassword(request.getParameter("txtPas"));
-        //System.out.println("Password: " + pas);
-        try {
-            CallableStatement call = ConexionDB.getConexion().prepareCall("{ call usuario_check(?,?) }");
-            call.setString(1, usu);
-            call.setString(2, pas);
-            ResultSet rs = call.executeQuery();
-
-            if (rs.next()) {
-                HttpSession sesionOk = request.getSession();
-                sesionOk.setAttribute("id", rs.getInt(1));
-                sesionOk.setAttribute("nombre", rs.getString(2).toString());
-                sesionOk.setAttribute("perfil", rs.getInt(4));
-
-                int sesionId = (int) sesionOk.getAttribute("id");
-                toLog(sesionId, 1, "Inicio de de sesión");
-                request.getRequestDispatcher("home.jsp").forward(request, response);
-            } else {
-                String fallido = "Login fallido: "+request.getParameter("txtUsu")+" / "+request.getParameter("txtPas");
-                toLog(0, 3, fallido);
-                request.setAttribute("msg", "Usuario o contraseña Incorrectos");
-                request.getRequestDispatcher("index.jsp").forward(request, response);
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
     }
 
     /**

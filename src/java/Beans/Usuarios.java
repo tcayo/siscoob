@@ -1,16 +1,17 @@
 package Beans;
 
 public class Usuarios {
-    private int id,tipo;
+    private int id,tipo,estado;
     private String username,password,last_session,fecha_creacion;
  
-    public Usuarios(int id, String username, String password, int tipo, String last_session, String fecha_creacion) {
+    public Usuarios(int id, String username, String password, int tipo, String fecha_creacion, String last_session, int estado) {
         this.id = id;        
         this.username = username;
         this.password = password;
         this.tipo = tipo;
-        this.last_session = last_session;
         this.fecha_creacion = fecha_creacion;
+        this.last_session = last_session;        
+        this.estado = estado;        
     }
 
     public int getId() {
@@ -59,6 +60,14 @@ public class Usuarios {
 
     public void setFecha_creacion(String fecha_creacion) {
         this.fecha_creacion = fecha_creacion;
+    }
+
+    public int getEstado() {
+        return estado;
+    }
+
+    public void setEstado(int estado) {
+        this.estado = estado;
     }
 
     

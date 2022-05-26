@@ -1,21 +1,28 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package Servlets;
 
+import Beans.Logs;
 import Utils.ConexionDB;
-import static Utils.Tools.hashPassword;
-import static Utils.Tools.toLog;
 import java.io.IOException;
 import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-@WebServlet(name = "ServletLogin", urlPatterns = {"/ServletLogin"})
-public class ServletLogin extends HttpServlet {
+/**
+ *
+ * @author administrador
+ */
+@WebServlet(name = "ServletLogs", urlPatterns = {"/ServletLogs"})
+public class ServletLogs extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -45,17 +52,24 @@ public class ServletLogin extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+        
+        try {
+                CallableStatement call = ConexionDB.getConexion().prepareCall("{ call logs_get() }");
+                ResultSet rs = call.executeQuery();
 
-        String op = request.getParameter("op");
+                ArrayList<Logs> lista = new ArrayList<>();
 
-        if (op.equals("cerrar")) {
-            HttpSession sesionOk = request.getSession();
-            int id = (int) sesionOk.getAttribute("id");
-            toLog(id, 2, "Cierre de sesión");
+                while (rs.next()) {
+                    Logs lo = new Logs(rs.getInt(1), rs.getString(2), rs.getString(3), 
+                            rs.getString(4), rs.getString(5));
+                    lista.add(lo);
+                }
+                request.setAttribute("log_lista", lista);
+                request.getRequestDispatcher("log_listado.jsp").forward(request, response);
 
-            sesionOk.invalidate();
-            request.getRequestDispatcher("index.jsp").forward(request, response);
-        }
+            } catch (Exception e) {
+                System.out.println("Error: " + e);
+            }
     }
 
     /**
@@ -70,34 +84,6 @@ public class ServletLogin extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-
-        String usu = request.getParameter("txtUsu");
-        String pas = hashPassword(request.getParameter("txtPas"));
-        //System.out.println("Password: " + pas);
-        try {
-            CallableStatement call = ConexionDB.getConexion().prepareCall("{ call usuario_check(?,?) }");
-            call.setString(1, usu);
-            call.setString(2, pas);
-            ResultSet rs = call.executeQuery();
-
-            if (rs.next()) {
-                HttpSession sesionOk = request.getSession();
-                sesionOk.setAttribute("id", rs.getInt(1));
-                sesionOk.setAttribute("nombre", rs.getString(2).toString());
-                sesionOk.setAttribute("perfil", rs.getInt(4));
-
-                int sesionId = (int) sesionOk.getAttribute("id");
-                toLog(sesionId, 1, "Inicio de de sesión");
-                request.getRequestDispatcher("home.jsp").forward(request, response);
-            } else {
-                String fallido = "Login fallido: "+request.getParameter("txtUsu")+" / "+request.getParameter("txtPas");
-                toLog(0, 3, fallido);
-                request.setAttribute("msg", "Usuario o contraseña Incorrectos");
-                request.getRequestDispatcher("index.jsp").forward(request, response);
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
     }
 
     /**

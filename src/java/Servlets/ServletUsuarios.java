@@ -25,7 +25,7 @@ public class ServletUsuarios extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {        
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=ISO-8859-1");
     }
 
@@ -66,7 +66,7 @@ public class ServletUsuarios extends HttpServlet {
 
                 while (rs.next()) {
                     Usuarios u = new Usuarios(rs.getInt(1), rs.getString(2),
-                            rs.getString(3), rs.getInt(4), rs.getString(5), rs.getString(6));
+                            rs.getString(3), rs.getInt(4), rs.getString(5), rs.getString(6), rs.getInt(7));
                     lista.add(u);
                 }
                 request.setAttribute("u_lista", lista);
@@ -84,7 +84,7 @@ public class ServletUsuarios extends HttpServlet {
 
                 while (rs.next()) {
                     Usuarios u = new Usuarios(rs.getInt(1), rs.getString(2),
-                            rs.getString(3), rs.getInt(4), rs.getString(5), rs.getString(6));
+                            rs.getString(3), rs.getInt(4), rs.getString(5), rs.getString(6), rs.getInt(7));
                     lista.add(u);
                 }
                 request.setAttribute("u_lista", lista);
@@ -121,17 +121,17 @@ public class ServletUsuarios extends HttpServlet {
                 }
 
                 String username = request.getParameter("txtUsername");
-                String password = hashPassword(request.getParameter("txtPassword")); 
-                String tipo = request.getParameter("txtTipo");
+                String password = hashPassword(request.getParameter("txtPassword"));
+                String tipo = request.getParameter("txtTipo");                
 
                 CallableStatement call = ConexionDB.getConexion().prepareCall("{ call usuario_new(?,?,?,?,?,?) }");
 
                 call.setInt(1, 0);
                 call.setString(2, username);
                 call.setString(3, password);
-                call.setInt(4, Integer.parseInt(tipo));
+                call.setInt(4, Integer.parseInt(tipo));                
                 call.setTimestamp(5, getCurrentTimeStamp());
-                call.setTimestamp(6, getCurrentTimeStamp());
+                call.setInt(6, estado);
                 call.executeUpdate();
 
                 //request.getRequestDispatcher("index.jsp").forward(request, response);
@@ -148,20 +148,20 @@ public class ServletUsuarios extends HttpServlet {
                 } else {
                     estado = 0;
                 }
-                
-                String password = hashPassword(request.getParameter("txtPassword"));                
+
+                String password = hashPassword(request.getParameter("txtPassword"));
                 int tipo = Integer.parseInt(request.getParameter("txtTipo"));
                 int id = Integer.parseInt(request.getParameter("updId"));
-                
+
                 CallableStatement call = ConexionDB.getConexion().prepareCall("{ call usuario_upd(?,?,?,?,?) }");
 
                 call.setString(1, password);
-                call.setInt(2, tipo);
+                call.setInt(2, tipo);                
                 call.setTimestamp(3, getCurrentTimeStamp());
-                call.setTimestamp(4, getCurrentTimeStamp());
+                call.setInt(4, estado);
                 call.setInt(5, id);
                 call.executeUpdate();
-                
+
                 response.sendRedirect("ServletUsuarios");
 
             } catch (Exception e) {

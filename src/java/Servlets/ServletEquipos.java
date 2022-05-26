@@ -31,7 +31,7 @@ public class ServletEquipos extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=ISO-8859-1");
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -47,7 +47,7 @@ public class ServletEquipos extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-        
+
         String borrar = request.getParameter("del");
         String actualizar = request.getParameter("upd");
         if (borrar != null) {
@@ -71,7 +71,8 @@ public class ServletEquipos extends HttpServlet {
 
                 while (rs.next()) {
                     Equipos eq = new Equipos(rs.getInt(1), rs.getString(2), rs.getString(3),
-                            rs.getString(4), rs.getString(5), rs.getString(6), rs.getInt(7));
+                            rs.getString(4), rs.getString(5), rs.getString(6), rs.getInt(7),
+                            rs.getString(8), rs.getString(9));
                     lista.add(eq);
                 }
                 request.setAttribute("eq_lista", lista);
@@ -89,7 +90,8 @@ public class ServletEquipos extends HttpServlet {
 
                 while (rs.next()) {
                     Equipos eq = new Equipos(rs.getInt(1), rs.getString(2), rs.getString(3),
-                            rs.getString(4), rs.getString(5), rs.getString(6), rs.getInt(7));
+                            rs.getString(4), rs.getString(5), rs.getString(6), rs.getInt(7),
+                            rs.getString(8), rs.getString(9));
                     lista.add(eq);
                 }
                 request.setAttribute("eq_lista", lista);
@@ -113,7 +115,7 @@ public class ServletEquipos extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-        
+
         String op = request.getParameter("op");
 
         if (op.equals("nuevo")) {
@@ -130,9 +132,10 @@ public class ServletEquipos extends HttpServlet {
                 String serie_numero = request.getParameter("txtSerie");
                 String nombre_bien = request.getParameter("txtNombre");
                 String marca = request.getParameter("txtMarca");
+                String fecha_oc = request.getParameter("txtFechaOc");
                 int idestado = Integer.parseInt(request.getParameter("txtIdestado"));
 
-                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("insert into tblequipos values(?,?,?,?,?,?,?)");
+                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("insert into tblequipos values(?,?,?,?,?,?,?,?,?)");
 
                 sta.setInt(1, 0);
                 sta.setString(2, codigo_patrimonio);
@@ -141,8 +144,10 @@ public class ServletEquipos extends HttpServlet {
                 sta.setString(5, nombre_bien);
                 sta.setString(6, marca);
                 sta.setInt(7, idestado);
+                sta.setString(8, fecha_oc);
+                sta.setTimestamp(9, getCurrentTimeStamp());
                 sta.executeUpdate();
-                
+
                 response.sendRedirect("ServletEquipos");
 
             } catch (Exception e) {
@@ -156,27 +161,29 @@ public class ServletEquipos extends HttpServlet {
                 } else {
                     estado = 0;
                 }
-                
+
                 String codigo_patrimonio = request.getParameter("txtCod");
                 String orden_compra = request.getParameter("txtOc");
                 String serie_numero = request.getParameter("txtSerie");
                 String nombre_bien = request.getParameter("txtNombre");
                 String marca = request.getParameter("txtMarca");
-                int idestado = Integer.parseInt(request.getParameter("txtIdestado")); 
-                
+                String fecha_oc = request.getParameter("txtFechaOc");
+                int idestado = Integer.parseInt(request.getParameter("txtIdestado"));
+
                 int id = Integer.parseInt(request.getParameter("updId"));
-                
-                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("UPDATE tblequipos SET codigo_patrimonio=?,orden_compra=?,serie_numero=?,nombre_bien=?,marca=?,idestado=? WHERE id=?");
-                
+
+                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("UPDATE tblequipos SET codigo_patrimonio=?,orden_compra=?,serie_numero=?,nombre_bien=?,marca=?,idestado=?,fecha_oc=? WHERE id=?");
+
                 sta.setString(1, codigo_patrimonio);
                 sta.setString(2, orden_compra);
                 sta.setString(3, serie_numero);
                 sta.setString(4, nombre_bien);
                 sta.setString(5, marca);
                 sta.setInt(6, idestado);
-                sta.setInt(7, id);
+                sta.setString(7, fecha_oc);
+                sta.setInt(8, id);
                 sta.executeUpdate();
-                
+
                 response.sendRedirect("ServletEquipos");
 
             } catch (Exception e) {

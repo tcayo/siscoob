@@ -13,7 +13,7 @@ public class ConexionDB {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             con = DriverManager.getConnection(cadena);
-            System.out.println("Conexión satisfactoria");
+            //System.out.println("Conexión satisfactoria");
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }

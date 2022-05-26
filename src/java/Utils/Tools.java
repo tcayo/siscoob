@@ -1,6 +1,7 @@
 package Utils;
 
 import java.security.MessageDigest;
+import java.sql.CallableStatement;
 import javax.servlet.http.HttpServletRequest;
 
 public class Tools {
@@ -37,7 +38,7 @@ public class Tools {
     }
 
     // We need a bytesToHex method first. So, from -
-// http://stackoverflow.com/a/9855338/2970947
+    // http://stackoverflow.com/a/9855338/2970947
     final protected static char[] hexArray = "0123456789ABCDEF"
             .toCharArray();
 
@@ -73,4 +74,20 @@ public class Tools {
         return "";
     }
 
+    public static void toLog(int idusuario, int cod_evento, String desc_evento){
+        
+         try {
+                CallableStatement call = ConexionDB.getConexion().prepareCall("{ call log_new(?,?,?,?,?) }");
+                call.setInt(1, 0);
+                call.setInt(2, idusuario);
+                call.setInt(3, cod_evento);
+                call.setString(4, desc_evento);
+                call.setTimestamp(5, getCurrentTimeStamp());                
+                call.executeUpdate();
+
+            } catch (Exception e) {
+                System.out.println("Error: " + e);
+            }
+    }
+    
 }
