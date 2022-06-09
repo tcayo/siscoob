@@ -29,7 +29,7 @@
             <td><%=eq.getNfecha_oc()%></td>
             <td><a href="ServletEquipos?upd=<%=eq.getId()%>"><button class="btn btn-primary">Editar</button></a></td> <!--btn btn-primary es un boton de bootstrap de color azul-->
             <%if(perfil==9){%>
-            <td><a href="ServletEquipos?del=<%=eq.getId()%>"><button class="btn btn-danger">Eliminar</button></a></td> <!--btn btn-danger es un boton de bootstrap para mostrar peligro-->
+            <td><a href="ServletEquipos?dele=<%=eq.getId()%>" onclick="bootbox.confirm();return false;"><button class="btn btn-danger">Eliminar</button></a></td> <!--btn btn-danger es un boton de bootstrap para mostrar peligro-->
             <%}%>   
         </tr>
         <%

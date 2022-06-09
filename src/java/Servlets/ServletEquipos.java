@@ -4,8 +4,6 @@ import Beans.Equipos;
 import Utils.ConexionDB;
 import static Utils.Tools.*;
 import java.io.IOException;
-import java.io.PrintWriter;
-import static java.lang.System.out;
 import java.sql.*;
 import java.util.*;
 import javax.servlet.*;
@@ -51,10 +49,10 @@ public class ServletEquipos extends HttpServlet {
         String borrar = request.getParameter("del");
         String actualizar = request.getParameter("upd");
         if (borrar != null) {
-            try {
-                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("delete from tblequipos where id=?");
-                sta.setInt(1, Integer.parseInt(borrar));
-                sta.executeUpdate();
+            try {                
+                CallableStatement call = ConexionDB.getConexion().prepareCall("{ call equipo_del(?) }");
+                call.setInt(1, Integer.parseInt(borrar));
+                call.executeUpdate();
 
                 response.sendRedirect("ServletEquipos");
 
@@ -62,10 +60,10 @@ public class ServletEquipos extends HttpServlet {
                 System.out.println("Error: " + e);
             }
         } else if (actualizar != null) {
-            try {
-                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("select * from tblequipos where id=?");
-                sta.setInt(1, Integer.parseInt(actualizar));
-                ResultSet rs = sta.executeQuery();
+            try {                
+                CallableStatement call = ConexionDB.getConexion().prepareCall("{ call equipo_get(?) }");
+                call.setInt(1, Integer.parseInt(actualizar));
+                ResultSet rs = call.executeQuery();
 
                 ArrayList<Equipos> lista = new ArrayList<>();
 
@@ -83,8 +81,8 @@ public class ServletEquipos extends HttpServlet {
             }
         } else {
             try {
-                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("select * from tblequipos");
-                ResultSet rs = sta.executeQuery();
+                CallableStatement call = ConexionDB.getConexion().prepareCall("{ call equipos_get() }");
+                ResultSet rs = call.executeQuery();
 
                 ArrayList<Equipos> lista = new ArrayList<>();
 
@@ -134,19 +132,19 @@ public class ServletEquipos extends HttpServlet {
                 String marca = request.getParameter("txtMarca");
                 String fecha_oc = request.getParameter("txtFechaOc");
                 int idestado = Integer.parseInt(request.getParameter("txtIdestado"));
+                
+                CallableStatement call = ConexionDB.getConexion().prepareCall("{ call equipo_new(?,?,?,?,?,?,?,?,?) }");
 
-                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("insert into tblequipos values(?,?,?,?,?,?,?,?,?)");
-
-                sta.setInt(1, 0);
-                sta.setString(2, codigo_patrimonio);
-                sta.setString(3, orden_compra);
-                sta.setString(4, serie_numero);
-                sta.setString(5, nombre_bien);
-                sta.setString(6, marca);
-                sta.setInt(7, idestado);
-                sta.setString(8, fecha_oc);
-                sta.setTimestamp(9, getCurrentTimeStamp());
-                sta.executeUpdate();
+                call.setInt(1, 0);
+                call.setString(2, codigo_patrimonio);
+                call.setString(3, orden_compra);
+                call.setString(4, serie_numero);
+                call.setString(5, nombre_bien);
+                call.setString(6, marca);
+                call.setInt(7, idestado);
+                call.setString(8, fecha_oc);
+                call.setTimestamp(9, getCurrentTimeStamp());
+                call.executeUpdate();
 
                 response.sendRedirect("ServletEquipos");
 
@@ -171,18 +169,18 @@ public class ServletEquipos extends HttpServlet {
                 int idestado = Integer.parseInt(request.getParameter("txtIdestado"));
 
                 int id = Integer.parseInt(request.getParameter("updId"));
+                
+                CallableStatement call = ConexionDB.getConexion().prepareCall("{ call equipo_upd(?,?,?,?,?,?,?,?) }");
 
-                PreparedStatement sta = ConexionDB.getConexion().prepareStatement("UPDATE tblequipos SET codigo_patrimonio=?,orden_compra=?,serie_numero=?,nombre_bien=?,marca=?,idestado=?,fecha_oc=? WHERE id=?");
-
-                sta.setString(1, codigo_patrimonio);
-                sta.setString(2, orden_compra);
-                sta.setString(3, serie_numero);
-                sta.setString(4, nombre_bien);
-                sta.setString(5, marca);
-                sta.setInt(6, idestado);
-                sta.setString(7, fecha_oc);
-                sta.setInt(8, id);
-                sta.executeUpdate();
+                call.setString(1, codigo_patrimonio);
+                call.setString(2, orden_compra);
+                call.setString(3, serie_numero);
+                call.setString(4, nombre_bien);
+                call.setString(5, marca);
+                call.setInt(6, idestado);
+                call.setString(7, fecha_oc);
+                call.setInt(8, id);
+                call.executeUpdate();
 
                 response.sendRedirect("ServletEquipos");
 
